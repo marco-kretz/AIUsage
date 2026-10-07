@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Windows 11 tray app (WinUI 3, .NET 10, unpackaged, Native AOT) showing AI usage limits. Currently only Claude Code. See `README.md` for architecture and design decisions.
+Windows 11 tray app (WinUI 3, .NET 10, unpackaged, Native AOT) showing AI usage limits. Currently only Claude Code. See `docs/development.md` for build, release, architecture and design decisions; `README.md` is for end users.
 
 ## Commands
 
