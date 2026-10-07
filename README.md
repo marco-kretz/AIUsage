@@ -72,3 +72,7 @@ The app reads `claudeAiOauth.accessToken` from `%USERPROFILE%\.claude\.credentia
 ## Not implemented (by scope)
 
 Other providers, own OAuth login/token refresh, telemetry, reading credentials from WSL. Clicking a toast opens the flyout only while the app is running: there is no COM activator.
+
+## License
+
+[MIT](LICENSE)
