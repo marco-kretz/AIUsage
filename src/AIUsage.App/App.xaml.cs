@@ -132,7 +132,7 @@ public partial class App : Application
         switch (command)
         {
             case TrayIcon.MenuCommand.Refresh:
-                _monitor.RefreshNow();
+                _ = _monitor.RefreshAsync();
                 break;
             case TrayIcon.MenuCommand.Settings:
                 ShowSettings();
@@ -155,7 +155,7 @@ public partial class App : Application
             viewModel.Saved += () =>
             {
                 OnSnapshotsChanged();
-                _monitor.RefreshNow();
+                _ = _monitor.RefreshAsync();
             };
             _settingsWindow = new SettingsWindow(viewModel);
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;

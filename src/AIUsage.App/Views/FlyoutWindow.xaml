@@ -67,16 +67,32 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="4" Padding="18,10,12,10"
+        <!-- Padding aligns the text and the outer glyph edge with the card content above (16 margin + 1 border + 14 padding);
+             the 32 px buttons put their 16 px glyph 8 px inside the button box. -->
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="4" Padding="31,8,23,8"
               Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
+            <Grid.Resources>
+                <Storyboard x:Name="RefreshSpin" RepeatBehavior="Forever">
+                    <DoubleAnimation Storyboard.TargetName="RefreshRotation" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:0.8" />
+                </Storyboard>
+                <Style x:Key="FooterButtonStyle" TargetType="Button" BasedOn="{StaticResource SubtleButtonStyle}">
+                    <Setter Property="Width" Value="32" />
+                    <Setter Property="Height" Value="32" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </Grid.Resources>
             <TextBlock Text="{x:Bind ViewModel.UpdatedText, Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
-            <Button x:Name="RefreshButton" Grid.Column="1" Style="{StaticResource SubtleButtonStyle}" Command="{x:Bind ViewModel.RefreshCommand}"
+            <Button x:Name="RefreshButton" Grid.Column="1" Style="{StaticResource FooterButtonStyle}" Command="{x:Bind ViewModel.RefreshCommand}"
                     ToolTipService.ToolTip="{x:Bind res:Strings.Flyout_Refresh}" AutomationProperties.Name="{x:Bind res:Strings.Flyout_Refresh}">
-                <FontIcon Glyph="&#xE72C;" FontSize="16" />
+                <FontIcon Glyph="&#xE72C;" FontSize="16" RenderTransformOrigin="0.5,0.5">
+                    <FontIcon.RenderTransform>
+                        <RotateTransform x:Name="RefreshRotation" />
+                    </FontIcon.RenderTransform>
+                </FontIcon>
             </Button>
-            <Button Grid.Column="2" Style="{StaticResource SubtleButtonStyle}" Command="{x:Bind ViewModel.OpenSettingsCommand}"
+            <Button Grid.Column="2" Style="{StaticResource FooterButtonStyle}" Command="{x:Bind ViewModel.OpenSettingsCommand}"
                     ToolTipService.ToolTip="{x:Bind res:Strings.Flyout_Settings}" AutomationProperties.Name="{x:Bind res:Strings.Flyout_Settings}">
                 <FontIcon Glyph="&#xE713;" FontSize="16" />
             </Button>

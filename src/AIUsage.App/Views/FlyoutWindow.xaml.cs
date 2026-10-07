@@ -76,6 +76,21 @@ public sealed partial class FlyoutWindow : Window
         _countdownTimer = DispatcherQueue.CreateTimer();
         _countdownTimer.Interval = TimeSpan.FromSeconds(20);
         _countdownTimer.Tick += (_, _) => ViewModel.UpdateCountdowns();
+
+        ViewModel.RefreshCommand.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ViewModel.RefreshCommand.IsRunning))
+            {
+                if (ViewModel.RefreshCommand.IsRunning)
+                {
+                    RefreshSpin.Begin();
+                }
+                else
+                {
+                    RefreshSpin.Stop();
+                }
+            }
+        };
     }
 
     public void Toggle()
@@ -221,8 +236,11 @@ public sealed partial class FlyoutWindow : Window
         Content.Measure(new Size(WidthDip, double.PositiveInfinity));
         var heightDip = Content.DesiredSize.Height > 0 ? Content.DesiredSize.Height : 320;
         var margin = (int)Math.Round(MarginDip * scale);
-        var width = (int)Math.Round(WidthDip * scale);
-        var height = Math.Min((int)Math.Round(heightDip * scale), work.Height - 2 * margin);
+        // The window size includes the thin border, the measured content does not; without this the footer gets clipped.
+        var frameWidth = AppWindow.Size.Width - AppWindow.ClientSize.Width;
+        var frameHeight = AppWindow.Size.Height - AppWindow.ClientSize.Height;
+        var width = (int)Math.Round(WidthDip * scale) + frameWidth;
+        var height = Math.Min((int)Math.Round(heightDip * scale) + frameHeight, work.Height - 2 * margin);
 
         var centerX = (anchor.Left + anchor.Right) / 2;
         var centerY = (anchor.Top + anchor.Bottom) / 2;

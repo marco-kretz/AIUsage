@@ -29,13 +29,16 @@ public sealed class UsageMonitor(
         }
     }
 
-    public void RefreshNow()
+    /// <summary>
+    /// Requests an immediate fetch. Completes when every provider has fetched, or right away for providers
+    /// whose refresh is suppressed (rate-limit pause or minimum gap between manual refreshes).
+    /// </summary>
+    public Task RefreshAsync() => Task.WhenAll(_loops.Select(loop =>
     {
-        foreach (var loop in _loops)
-        {
-            loop.Refresh.TrySetResult();
-        }
-    }
+        var done = loop.Done.Task; // read before signalling so this refresh's completion is observed
+        loop.Refresh.TrySetResult();
+        return done;
+    }));
 
     public void Dispose() => _cts.Cancel();
 
@@ -64,6 +67,7 @@ public sealed class UsageMonitor(
             loop.Current = Merge(loop.Current, fetched);
             logger.LogInformation("{Provider}: {Status}, {Count} windows", loop.Provider.Id, fetched.Status, fetched.Windows.Count);
             SnapshotChanged?.Invoke(loop.Current);
+            loop.CompleteDone();
 
             var due = lastFetch + NextDelay(fetched, failures, Clamp(pollInterval()));
             // Manual refresh must not bypass a server-requested pause.
@@ -91,6 +95,8 @@ public sealed class UsageMonitor(
                     {
                         break;
                     }
+
+                    loop.CompleteDone(); // suppressed: nothing will be fetched for this request
                 }
             }
 
@@ -142,5 +148,8 @@ public sealed class UsageMonitor(
         public IUsageProvider Provider { get; } = provider;
         public volatile UsageSnapshot Current = UsageSnapshot.Pending(provider);
         public TaskCompletionSource Refresh = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public volatile TaskCompletionSource Done = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public void CompleteDone() => Interlocked.Exchange(ref Done, new(TaskCreationOptions.RunContinuationsAsynchronously)).TrySetResult();
     }
 }

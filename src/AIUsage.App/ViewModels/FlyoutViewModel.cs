@@ -18,8 +18,9 @@ public sealed partial class FlyoutViewModel(AppSettings settings, UsageMonitor m
 
     public event Action? SettingsRequested;
 
+    // AsyncRelayCommand disables the button while running; the minimum duration keeps the spinner from flickering.
     [RelayCommand]
-    private void Refresh() => monitor.RefreshNow();
+    private Task Refresh() => Task.WhenAll(monitor.RefreshAsync(), Task.Delay(500));
 
     [RelayCommand]
     private void OpenSettings() => SettingsRequested?.Invoke();
