@@ -1,7 +1,7 @@
 name: Release
 
 # A pushed tag v* (also one created with a release in the GitHub UI) builds the app
-# and attaches the zip to the release of that tag, creating the release if needed.
+# and attaches the installer and a portable zip to the release of that tag, creating the release if needed.
 on:
   push:
     tags: ['v*']
@@ -31,6 +31,16 @@ jobs:
           dotnet publish src/AIUsage.App -c Release -r win-x64 -o artifacts/publish -p:Version=$version
           Get-ChildItem artifacts/publish -Exclude *.pdb | Compress-Archive -DestinationPath "artifacts/AIUsage-$version-win-x64.zip"
 
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $iscc = Get-ChildItem "${env:ProgramFiles(x86)}\Inno Setup*\ISCC.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $iscc) {
+            choco install innosetup -y --no-progress
+            $iscc = Get-ChildItem "${env:ProgramFiles(x86)}\Inno Setup*\ISCC.exe" | Select-Object -First 1
+          }
+          & $iscc.FullName /Q "/DAppVersion=$('${{ github.ref_name }}'.TrimStart('v'))" installer/AIUsage.iss
+
       - name: Upload to release
         shell: pwsh
         env:
@@ -39,4 +49,4 @@ jobs:
           $tag = '${{ github.ref_name }}'
           gh release view $tag *> $null
           if ($LASTEXITCODE -ne 0) { gh release create $tag --title $tag --generate-notes }
-          gh release upload $tag (Get-ChildItem artifacts/*.zip) --clobber
+          gh release upload $tag (Get-ChildItem artifacts/*-setup.exe, artifacts/*.zip) --clobber

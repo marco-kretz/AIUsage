@@ -7,14 +7,15 @@ Windows 11 tray app that shows your Claude Code usage limits (5-hour and weekly 
 ## Install
 
 1. Install the [Windows App Runtime 2.x](https://learn.microsoft.com/windows/apps/windows-app-sdk/downloads) (x64) if you don't have it yet. If it is missing, the app shows a dialog with a download link at startup.
-2. Download `AIUsage-<version>-win-x64.zip` from the [latest release](https://github.com/marco-kretz/AIUsage/releases/latest) and extract it to a folder of your choice, e.g. `%LOCALAPPDATA%\Programs\AIUsage`.
-3. Start `AIUsage.exe`. The exe is not code-signed, so Windows SmartScreen may warn about an unknown publisher (*More info → Run anyway*).
+2. Download `AIUsage-<version>-setup.exe` from the [latest release](https://github.com/marco-kretz/AIUsage/releases/latest) and run it. It installs per user (no admin rights) to `%LOCALAPPDATA%\Programs\AIUsage` and adds a Start menu entry. The setup is not code-signed, so Windows SmartScreen may warn about an unknown publisher (*More info → Run anyway*).
+
+Prefer no installer? Extract `AIUsage-<version>-win-x64.zip` to any folder and start `AIUsage.exe`.
 
 You need to be signed in to [Claude Code](https://claude.com/claude-code) with a Claude subscription. The app reads the existing login from `%USERPROFILE%\.claude\.credentials.json`.
 
 New tray icons land in the overflow area. Pin it via *Settings → Personalization → Taskbar → Other system tray icons* or by dragging it onto the taskbar.
 
-To update, quit the app and replace the folder contents. To uninstall, turn off *Start with Windows*, quit the app and delete the folder and `%LOCALAPPDATA%\AIUsage\`.
+To update, run the new setup. To uninstall, use *Settings → Apps*; settings and logs stay in `%LOCALAPPDATA%\AIUsage\` until you delete that folder. With the zip, turn off *Start with Windows* and delete the folder.
 
 ## Usage
 

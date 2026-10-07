@@ -21,6 +21,7 @@ dotnet publish src/AIUsage.App -c Release -r win-x64 -o artifacts/publish     # 
 - `src/AIUsage.App`: WinUI shell. `Tray/` (Shell_NotifyIcon P/Invoke + GDI+ icon renderer), `Views/`, `ViewModels/` (CommunityToolkit.Mvvm), `Interop/` (all P/Invoke: `Native.cs` Win32, `GdiPlus.cs` icon drawing), `UsageNotifier` (toasts), `Autostart` (HKCU Run).
 - `tests/AIUsage.Core.Tests`: parser fixtures in `Fixtures/*.json`, monitor merge/backoff tests.
 - `tools/`: file-based C# scripts (`smoke.cs`, `make-icon.cs`).
+- `installer/`: Inno Setup script for the per-user setup; built by `.github/workflows/release.yml`.
 
 ## Rules
 
@@ -42,6 +43,7 @@ dotnet publish src/AIUsage.App -c Release -r win-x64 -o artifacts/publish     # 
 - Do not use `AppNotificationManager`; it needs the WinAppSDK Singleton package. Toasts go through `Windows.UI.Notifications` with an HKCU AUMID.
 - XAML errors like `Cannot resolve DataType` together with warning WMC1509 usually mean the C# pass failed first. Look for the CS error.
 - The tray icon GUID is fixed. Do not change it, or users lose their "always show" setting.
+- The installer's uninstaller deletes the HKCU Run value `AIUsage` and the toast AUMID key, even when they belong to another copy (e.g. `artifacts/publish`). Back them up before testing an uninstall.
 
 ## Verifying UI changes
 

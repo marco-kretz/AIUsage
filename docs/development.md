@@ -17,7 +17,7 @@ The publish output is a Native AOT build of about 11 MB (see "Size" below). Star
 
 ## Release
 
-Push a tag `v<version>` (e.g. `git tag v0.2.0 && git push origin v0.2.0`) or create a release with a new tag on GitHub. `.github/workflows/release.yml` then runs the tests, publishes with the version taken from the tag, and attaches `AIUsage-<version>-win-x64.zip` (without `*.pdb`) to the release, creating it with generated notes if it does not exist yet.
+Push a tag `v<version>` (e.g. `git tag v0.2.0 && git push origin v0.2.0`) or create a release with a new tag on GitHub. `.github/workflows/release.yml` then runs the tests, publishes with the version taken from the tag, builds the Inno Setup installer (`installer/AIUsage.iss`) and attaches `AIUsage-<version>-setup.exe` plus the portable `AIUsage-<version>-win-x64.zip` (both without `*.pdb`) to the release, creating it with generated notes if it does not exist yet.
 
 `<Version>` in `src/AIUsage.App/AIUsage.App.csproj` only applies to local builds; bump it alongside the tag.
 
