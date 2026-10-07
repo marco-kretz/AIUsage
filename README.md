@@ -2,6 +2,8 @@
 
 Windows 11 tray app that shows Claude Code usage limits (5-hour and weekly windows) as a ring gauge in the notification area, with a flyout for details.
 
+<p align="center"><img src="docs/preview.webp" alt="Flyout with 5-hour and weekly limits above the tray icon" width="447"></p>
+
 ## Build & run
 
 Requirements: .NET 10 SDK, Windows 11 (x64).
