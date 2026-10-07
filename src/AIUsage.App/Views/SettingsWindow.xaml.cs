@@ -1,5 +1,6 @@
 using AIUsage.App.ViewModels;
 using AIUsage.Core.Resources;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
 using static AIUsage.App.Interop.Native;
@@ -15,6 +16,9 @@ public sealed partial class SettingsWindow : Window
         ViewModel = viewModel;
         InitializeComponent();
         Title = Strings.Settings_Title;
+        // The caption bar defaults to the legacy light theme and the generic icon.
+        AppWindow.TitleBar.PreferredTheme = TitleBarTheme.UseDefaultAppMode;
+        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "AIUsage.ico"));
         CenterOnCursorMonitor(480, 760);
         viewModel.Closed += Close;
     }
