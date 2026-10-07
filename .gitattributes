@@ -1,0 +1,5 @@
+# Windows-only project: CRLF in the working tree, LF in the repository, independent of core.autocrlf.
+* text=auto eol=crlf
+
+*.ico binary
+*.png binary
