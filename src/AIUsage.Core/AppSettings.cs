@@ -15,8 +15,8 @@ public sealed class AppSettings
     public bool NotificationsEnabled { get; set; }
     public string? CredentialsPath { get; set; }
 
-    /// <summary>UI culture ("de" or "en").</summary>
-    public string Language { get; set; } = "de";
+    /// <summary>UI culture ("de" or "en"); defaults to German on German systems, English elsewhere.</summary>
+    public string Language { get; set; } = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName is "de" ? "de" : "en";
 
     /// <summary>"providerId/windowId/resetPeriod/threshold" keys already notified, so each threshold fires once per reset.</summary>
     public List<string> NotifiedKeys { get; set; } = [];
