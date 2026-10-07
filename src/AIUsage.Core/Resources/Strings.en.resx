@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_FiveHour" xml:space="preserve"><value>5-hour limit</value></data>
+  <data name="Window_SevenDay" xml:space="preserve"><value>Weekly limit (all)</value></data>
+  <data name="Window_SevenDayModel" xml:space="preserve"><value>Weekly limit {0}</value></data>
+  <data name="Window_ExtraUsage" xml:space="preserve"><value>Extra usage</value></data>
+  <data name="Status_Pending" xml:space="preserve"><value>Loading …</value></data>
+  <data name="Status_NoCredentials" xml:space="preserve"><value>No credentials found. Start Claude Code and sign in.</value></data>
+  <data name="Status_AuthFailed" xml:space="preserve"><value>Token expired, start Claude Code.</value></data>
+  <data name="Status_RateLimited" xml:space="preserve"><value>Too many requests. Retrying later.</value></data>
+  <data name="Status_Offline" xml:space="preserve"><value>No connection.</value></data>
+  <data name="Status_Stale" xml:space="preserve"><value>No connection – values are stale.</value></data>
+  <data name="Reset_In" xml:space="preserve"><value>Resets in {0}</value></data>
+  <data name="Reset_Soon" xml:space="preserve"><value>Resets now</value></data>
+  <data name="Duration_DaysHours" xml:space="preserve"><value>{0} d {1} h</value></data>
+  <data name="Duration_HoursMinutes" xml:space="preserve"><value>{0} h {1} min</value></data>
+  <data name="Duration_Minutes" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Footer_UpdatedAt" xml:space="preserve"><value>Updated at {0:t}</value></data>
+  <data name="Footer_NeverUpdated" xml:space="preserve"><value>Not updated yet</value></data>
+  <data name="Menu_Refresh" xml:space="preserve"><value>Refresh now</value></data>
+  <data name="Menu_Settings" xml:space="preserve"><value>Settings …</value></data>
+  <data name="Menu_Autostart" xml:space="preserve"><value>Start with Windows</value></data>
+  <data name="Menu_Exit" xml:space="preserve"><value>Exit</value></data>
+  <data name="Flyout_Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Flyout_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>AI Usage – Settings</value></data>
+  <data name="Settings_PollInterval" xml:space="preserve"><value>Poll interval in seconds (min. 180)</value></data>
+  <data name="Settings_WarningThreshold" xml:space="preserve"><value>Orange from (%)</value></data>
+  <data name="Settings_CriticalThreshold" xml:space="preserve"><value>Red from (%)</value></data>
+  <data name="Settings_IconWindows" xml:space="preserve"><value>These windows drive the tray icon</value></data>
+  <data name="Settings_Autostart" xml:space="preserve"><value>Start with Windows</value></data>
+  <data name="Settings_Notifications" xml:space="preserve"><value>Notify at 80 % and 95 %</value></data>
+  <data name="Settings_CredentialsPath" xml:space="preserve"><value>Path to .credentials.json (empty = default)</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Language (applies after restart)</value></data>
+  <data name="Settings_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Settings_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Toast_Title" xml:space="preserve"><value>{0}: {1:0} % used</value></data>
+  <data name="Toast_Body" xml:space="preserve"><value>{0} passed {1} %.</value></data>
+  <data name="Tooltip_Window" xml:space="preserve"><value>{0}: {1:0} % · {2}</value></data>
+</root>

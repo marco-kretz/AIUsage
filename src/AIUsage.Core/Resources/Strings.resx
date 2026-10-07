@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Window_FiveHour" xml:space="preserve"><value>5-Stunden-Limit</value></data>
+  <data name="Window_SevenDay" xml:space="preserve"><value>Wochenlimit gesamt</value></data>
+  <data name="Window_SevenDayModel" xml:space="preserve"><value>Wochenlimit {0}</value></data>
+  <data name="Window_ExtraUsage" xml:space="preserve"><value>Zusatznutzung</value></data>
+  <data name="Status_Pending" xml:space="preserve"><value>Wird geladen …</value></data>
+  <data name="Status_NoCredentials" xml:space="preserve"><value>Keine Anmeldedaten gefunden. Claude Code starten und anmelden.</value></data>
+  <data name="Status_AuthFailed" xml:space="preserve"><value>Token abgelaufen, Claude Code starten.</value></data>
+  <data name="Status_RateLimited" xml:space="preserve"><value>Zu viele Anfragen. Neuer Versuch später.</value></data>
+  <data name="Status_Offline" xml:space="preserve"><value>Keine Verbindung.</value></data>
+  <data name="Status_Stale" xml:space="preserve"><value>Keine Verbindung – Werte sind veraltet.</value></data>
+  <data name="Reset_In" xml:space="preserve"><value>Zurücksetzung in {0}</value></data>
+  <data name="Reset_Soon" xml:space="preserve"><value>Zurücksetzung gleich</value></data>
+  <data name="Duration_DaysHours" xml:space="preserve"><value>{0} T {1} Std</value></data>
+  <data name="Duration_HoursMinutes" xml:space="preserve"><value>{0} Std {1} Min</value></data>
+  <data name="Duration_Minutes" xml:space="preserve"><value>{0} Min</value></data>
+  <data name="Footer_UpdatedAt" xml:space="preserve"><value>Aktualisiert um {0:HH:mm}</value></data>
+  <data name="Footer_NeverUpdated" xml:space="preserve"><value>Noch nicht aktualisiert</value></data>
+  <data name="Menu_Refresh" xml:space="preserve"><value>Jetzt aktualisieren</value></data>
+  <data name="Menu_Settings" xml:space="preserve"><value>Einstellungen …</value></data>
+  <data name="Menu_Autostart" xml:space="preserve"><value>Mit Windows starten</value></data>
+  <data name="Menu_Exit" xml:space="preserve"><value>Beenden</value></data>
+  <data name="Flyout_Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="Flyout_Settings" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>AI Usage – Einstellungen</value></data>
+  <data name="Settings_PollInterval" xml:space="preserve"><value>Abfrageintervall in Sekunden (mind. 180)</value></data>
+  <data name="Settings_WarningThreshold" xml:space="preserve"><value>Orange ab (%)</value></data>
+  <data name="Settings_CriticalThreshold" xml:space="preserve"><value>Rot ab (%)</value></data>
+  <data name="Settings_IconWindows" xml:space="preserve"><value>Diese Fenster steuern das Tray-Icon</value></data>
+  <data name="Settings_Autostart" xml:space="preserve"><value>Mit Windows starten</value></data>
+  <data name="Settings_Notifications" xml:space="preserve"><value>Benachrichtigen bei 80 % und 95 %</value></data>
+  <data name="Settings_CredentialsPath" xml:space="preserve"><value>Pfad zu .credentials.json (leer = Standard)</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Sprache (wirkt nach Neustart)</value></data>
+  <data name="Settings_Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="Settings_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="Toast_Title" xml:space="preserve"><value>{0}: {1:0} % verbraucht</value></data>
+  <data name="Toast_Body" xml:space="preserve"><value>{0} hat {1} % überschritten.</value></data>
+  <data name="Tooltip_Window" xml:space="preserve"><value>{0}: {1:0} % · {2}</value></data>
+</root>
