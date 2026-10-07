@@ -6,16 +6,19 @@ Windows 11 tray app that shows Claude Code usage limits (5-hour and weekly windo
 
 ## Build & run
 
-Requirements: .NET 10 SDK, Windows 11 (x64).
+Requirements: .NET 10 SDK, Windows 11 (x64), Visual Studio C++ build tools (for Native AOT publish).
+Runtime requirement for users: [Windows App Runtime 2.x](https://learn.microsoft.com/windows/apps/windows-app-sdk/downloads) (x64). No .NET runtime needed.
 
 ```powershell
 dotnet test                                   # parser/monitor unit tests (xUnit v3, Microsoft.Testing.Platform)
 dotnet run tools/smoke.cs                     # console smoke test against the real endpoint (add "en" for English)
 dotnet build src/AIUsage.App                  # debug build: src/AIUsage.App/bin/Debug/.../win-x64/AIUsage.exe
-dotnet publish src/AIUsage.App -c Release -r win-x64 --self-contained -o artifacts/publish
+# VS 18 vcvarsall.bat calls vswhere without a path, so it must be on PATH for the AOT linker step
+$env:PATH += ";${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+dotnet publish src/AIUsage.App -c Release -r win-x64 -o artifacts/publish
 ```
 
-The publish output is about 84 MB, partially trimmed (see "Size" below). Start `AIUsage.exe`. A second start brings the flyout to the front.
+The publish output is a Native AOT build of about 11 MB (see "Size" below). Start `AIUsage.exe`. A second start brings the flyout to the front.
 
 New tray icons land in the overflow area. Pin it via *Settings → Personalization → Taskbar → Other system tray icons* or by dragging it onto the taskbar. The icon has a fixed GUID, so Windows remembers the choice across restarts.
 
@@ -62,13 +65,22 @@ The app reads `claudeAiOauth.accessToken` from `%USERPROFILE%\.claude\.credentia
 - **WinUI 3 rather than WPF.** WinUI gives the native Windows 11 look (acrylic backdrop, rounded corners, InfoBar, theme brushes) with no extra effort. The parts that WinUI 3 lacks are small Win32 interop: a tool window with no taskbar button, and window-wide alpha through `WS_EX_LAYERED` for the fade. That interop works cleanly, so WPF was not needed.
 - **Shell_NotifyIcon via P/Invoke rather than H.NotifyIcon.** The flyout is a custom animated window anyway. Calling the API directly gives full control over the GUID identity, `Shell_NotifyIconGetRect` anchoring, TaskbarCreated and per-DPI icon sizes for about 200 lines of code, with no extra dependency. The context menu is a native Win32 menu. Two undocumented uxtheme ordinals, also used by Explorer, make it follow dark mode.
 - **Animation.** The window position and the layered alpha are driven from `CompositionTarget.Rendering`. Showing takes 230 ms with cubic ease-out and slides 40 DIP away from the taskbar edge. Hiding takes 140 ms with ease-in. With `UISettings.AnimationsEnabled == false`, the flyout shows instantly. The edge is the monitor edge nearest to the icon, so taskbars on any side, multiple monitors and per-monitor DPI are handled. The flyout is always clamped into the work area.
-- **Toasts** use `Windows.UI.Notifications` with a per-user AUMID in `HKCU\Software\Classes\AppUserModelId\AIUsage.App`. The Windows App SDK `AppNotificationManager` needs the Singleton package, which self-contained apps don't have.
+- **Toasts** use `Windows.UI.Notifications` with a per-user AUMID in `HKCU\Software\Classes\AppUserModelId\AIUsage.App`. The Windows App SDK `AppNotificationManager` needs the Singleton package, which is not guaranteed to be present; the OS API works regardless of deployment.
 - **Localization** uses `.resx` with strongly typed `Strings`, bound via `x:Bind`. German is the neutral language and English the satellite. The language is set in Settings and applies after a restart.
 
 ## Size
 
-- Only the WinUI parts of the Windows App SDK are referenced (`Microsoft.WindowsAppSDK.WinUI`, `.InteractiveExperiences`, `.Runtime`). The meta package would add about 60 MB of AI/ML/Search runtimes (232 MB → 172 MB).
-- `PublishTrimmed` with `TrimMode=partial` cuts it further to about 84 MB. Full trimming saves only about 4 MB more and risks breaking WinRT/XAML reflection.
+The app is published with **Native AOT** and a framework-dependent Windows App SDK: about 11 MB (`AIUsage.exe` ≈ 9.7 MB plus a few small DLLs).
+
+| Variant | Size | User needs |
+|---|---|---|
+| Native AOT, Windows App Runtime installed (current) | ≈ 11 MB | Windows App Runtime 2.x |
+| Framework-dependent .NET + Windows App SDK | ≈ 41 MB | .NET 10 + Windows App Runtime 2.x |
+| Everything bundled, partially trimmed | ≈ 84 MB | nothing |
+
+- Only the WinUI parts of the Windows App SDK are referenced (`Microsoft.WindowsAppSDK.WinUI`, `.InteractiveExperiences`, `.Runtime`). The meta package would add about 60 MB of AI/ML/Search runtimes.
+- The tray icon is drawn through the GDI+ flat API (`Interop/GdiPlus.cs`) instead of `System.Drawing.Common`, which is not AOT-friendly.
+- Settings use a source-generated `System.Text.Json` context; no reflection-based serialization.
 - `EnableMsixTooling` is required. Without it, an unpackaged publish omits `AIUsage.pri` and the `.xbf` files, and the app crashes at startup.
 
 ## Not implemented (by scope)

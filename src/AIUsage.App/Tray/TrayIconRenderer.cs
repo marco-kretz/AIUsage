@@ -1,7 +1,5 @@
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using AIUsage.Core;
+using static AIUsage.App.Interop.GdiPlus;
 
 namespace AIUsage.App.Tray;
 
@@ -14,35 +12,47 @@ public enum TrayIconKind
 
 public sealed record TrayIconState(TrayIconKind Kind, double Percent = 0, UsageLevel Level = UsageLevel.Normal, bool Dimmed = false);
 
-/// <summary>Draws the ring gauge icon. Returns an HICON owned by the caller.</summary>
+/// <summary>Draws the ring gauge icon with GDI+. Returns an HICON owned by the caller.</summary>
 internal static class TrayIconRenderer
 {
     public static nint Render(TrayIconState state, int size, bool lightTaskbar)
     {
-        using var bitmap = new Bitmap(size, size, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-        using (var g = Graphics.FromImage(bitmap))
+        EnsureStarted();
+        Check(GdipCreateBitmapFromScan0(size, size, 0, PixelFormat32bppPArgb, 0, out var bitmap));
+        try
         {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-            Draw(g, state, size, lightTaskbar);
-        }
+            Check(GdipGetImageGraphicsContext(bitmap, out var graphics));
+            try
+            {
+                GdipSetSmoothingMode(graphics, SmoothingModeAntiAlias);
+                GdipSetPixelOffsetMode(graphics, PixelOffsetModeHighQuality);
+                Draw(graphics, state, size, lightTaskbar);
+            }
+            finally
+            {
+                GdipDeleteGraphics(graphics);
+            }
 
-        return bitmap.GetHicon();
+            Check(GdipCreateHICONFromBitmap(bitmap, out var icon));
+            return icon;
+        }
+        finally
+        {
+            GdipDisposeImage(bitmap);
+        }
     }
 
-    private static void Draw(Graphics g, TrayIconState state, int size, bool light)
+    private static void Draw(nint g, TrayIconState state, int size, bool light)
     {
-        var alpha = state.Dimmed ? 110 : 255;
-        var foreground = Color.FromArgb(alpha, light ? Color.FromArgb(0x1A, 0x1A, 0x1A) : Color.White);
-        var track = light ? Color.FromArgb(state.Dimmed ? 35 : 70, 0, 0, 0) : Color.FromArgb(state.Dimmed ? 45 : 95, 255, 255, 255);
+        var alpha = state.Dimmed ? 110u : 255u;
+        var foreground = Argb(alpha, light ? 0x1A1A1Au : 0xFFFFFFu);
+        var track = light ? Argb(state.Dimmed ? 35u : 70u, 0x000000) : Argb(state.Dimmed ? 45u : 95u, 0xFFFFFF);
 
-        var stroke = Math.Max(2f, size / 6.5f);
-        var ring = new RectangleF(stroke / 2, stroke / 2, size - stroke, size - stroke);
-        using (var trackPen = new Pen(track, stroke))
-        {
-            g.DrawEllipse(trackPen, ring);
-        }
+        var stroke = MathF.Max(2f, size / 6.5f);
+        var (x, y, d) = (stroke / 2, stroke / 2, size - stroke);
+        Check(GdipCreatePen1(track, stroke, UnitWorld, out var trackPen));
+        GdipDrawEllipse(g, trackPen, x, y, d, d);
+        GdipDeletePen(trackPen);
 
         string text;
         if (state.Kind == TrayIconKind.Value)
@@ -50,9 +60,12 @@ internal static class TrayIconRenderer
             var percent = Math.Clamp(state.Percent, 0, 100);
             if (percent > 0)
             {
-                using var arcPen = new Pen(Color.FromArgb(alpha, LevelColor(state.Level, light)), stroke) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+                Check(GdipCreatePen1(Argb(alpha, LevelColor(state.Level, light)), stroke, UnitWorld, out var arcPen));
+                GdipSetPenStartCap(arcPen, LineCapRound);
+                GdipSetPenEndCap(arcPen, LineCapRound);
                 // Round caps overshoot by half the stroke; keep tiny values visible as a dot.
-                g.DrawArc(arcPen, ring, -90, (float)Math.Max(percent * 3.6, 1));
+                GdipDrawArc(g, arcPen, x, y, d, d, -90, (float)Math.Max(percent * 3.6, 1));
+                GdipDeletePen(arcPen);
             }
 
             text = Math.Round(state.Percent) >= 100 ? "100" : Math.Round(percent).ToString("0");
@@ -65,33 +78,46 @@ internal static class TrayIconRenderer
         DrawCenteredText(g, text, foreground, size, stroke);
     }
 
-    private static void DrawCenteredText(Graphics g, string text, Color color, int size, float stroke)
+    private static void DrawCenteredText(nint g, string text, uint color, int size, float stroke)
     {
-        using var path = new GraphicsPath();
-        using var family = new FontFamily("Segoe UI");
-        path.AddString(text, family, (int)FontStyle.Bold, 100, PointF.Empty, StringFormat.GenericTypographic);
-        var bounds = path.GetBounds();
+        Check(GdipCreateFontFamilyFromName("Segoe UI", 0, out var family));
+        Check(GdipStringFormatGetGenericTypographic(out var format));
+        Check(GdipCreatePath(0, out var path));
+        Check(GdipCreateMatrix(out var matrix));
+        Check(GdipCreateSolidFill(color, out var brush));
+        try
+        {
+            GdipAddPathString(path, text, text.Length, family, FontStyleBold, 100, default, format);
+            GdipGetPathWorldBounds(path, out var bounds, 0, 0);
 
-        // Fit the glyphs into the ring's inner square, wider for 3 digits.
-        var inner = size - 2 * stroke;
-        var maxWidth = inner * (text.Length >= 3 ? 1.05f : 0.92f);
-        var maxHeight = inner * 0.74f;
-        var scale = Math.Min(maxWidth / bounds.Width, maxHeight / bounds.Height);
+            // Fit the glyphs into the ring's inner square, wider for 3 digits.
+            var inner = size - 2 * stroke;
+            var maxWidth = inner * (text.Length >= 3 ? 1.05f : 0.92f);
+            var maxHeight = inner * 0.74f;
+            var scale = MathF.Min(maxWidth / bounds.Width, maxHeight / bounds.Height);
 
-        using var matrix = new Matrix();
-        matrix.Translate(size / 2f, size / 2f);
-        matrix.Scale(scale, scale);
-        matrix.Translate(-(bounds.Left + bounds.Width / 2), -(bounds.Top + bounds.Height / 2));
-        path.Transform(matrix);
-
-        using var brush = new SolidBrush(color);
-        g.FillPath(brush, path);
+            GdipTranslateMatrix(matrix, size / 2f, size / 2f, MatrixOrderPrepend);
+            GdipScaleMatrix(matrix, scale, scale, MatrixOrderPrepend);
+            GdipTranslateMatrix(matrix, -(bounds.X + bounds.Width / 2), -(bounds.Y + bounds.Height / 2), MatrixOrderPrepend);
+            GdipTransformPath(path, matrix);
+            GdipFillPath(g, brush, path);
+        }
+        finally
+        {
+            GdipDeleteBrush(brush);
+            GdipDeleteMatrix(matrix);
+            GdipDeletePath(path);
+            GdipDeleteStringFormat(format);
+            GdipDeleteFontFamily(family);
+        }
     }
 
-    private static Color LevelColor(UsageLevel level, bool light) => level switch
+    private static uint Argb(uint alpha, uint rgb) => alpha << 24 | rgb;
+
+    private static uint LevelColor(UsageLevel level, bool light) => level switch
     {
-        UsageLevel.Critical => light ? Color.FromArgb(0xC4, 0x2B, 0x1C) : Color.FromArgb(0xFF, 0x6B, 0x5E),
-        UsageLevel.Warning => light ? Color.FromArgb(0xC7, 0x6A, 0x00) : Color.FromArgb(0xFF, 0xB0, 0x3A),
-        _ => light ? Color.FromArgb(0x10, 0x7C, 0x10) : Color.FromArgb(0x6C, 0xCB, 0x5F),
+        UsageLevel.Critical => light ? 0xC42B1Cu : 0xFF6B5Eu,
+        UsageLevel.Warning => light ? 0xC76A00u : 0xFFB03Au,
+        _ => light ? 0x107C10u : 0x6CCB5Fu,
     };
 }
