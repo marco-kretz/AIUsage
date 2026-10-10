@@ -90,11 +90,16 @@ public sealed partial class ProviderViewModel : ObservableObject
     [ObservableProperty]
     public partial InfoBarSeverity StatusSeverity { get; set; }
 
+    // x:Bind skips function bindings whose argument is null, so IsOpen needs its own property.
+    [ObservableProperty]
+    public partial bool HasStatus { get; set; }
+
     public void Update(UsageSnapshot snapshot, AppSettings settings, DateTimeOffset now, bool animateBars)
     {
         Title = snapshot.DisplayName;
         Plan = snapshot.Plan;
         StatusMessage = UsageFormat.StatusMessage(snapshot.Status);
+        HasStatus = !string.IsNullOrEmpty(StatusMessage);
         StatusSeverity = snapshot.Status switch
         {
             UsageStatus.Pending => InfoBarSeverity.Informational,

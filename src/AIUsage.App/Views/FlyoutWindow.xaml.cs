@@ -287,7 +287,5 @@ public sealed partial class FlyoutWindow : Window
 
     public static Visibility VisibleIf(string? text) => string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
 
-    public static bool HasText(string? text) => !string.IsNullOrEmpty(text);
-
     public static Brush LevelBrush(UsageLevel level) => (Brush)Application.Current.Resources[$"Level{level}Brush"];
 }

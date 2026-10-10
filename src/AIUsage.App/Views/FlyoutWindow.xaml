@@ -29,7 +29,7 @@
                             </Border>
                         </StackPanel>
 
-                        <InfoBar IsOpen="{x:Bind views:FlyoutWindow.HasText(StatusMessage), Mode=OneWay}" IsClosable="False"
+                        <InfoBar IsOpen="{x:Bind HasStatus, Mode=OneWay}" IsClosable="False"
                                  Message="{x:Bind StatusMessage, Mode=OneWay}" Severity="{x:Bind StatusSeverity, Mode=OneWay}" />
 
                         <ItemsControl ItemsSource="{x:Bind Windows}">
